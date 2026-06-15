@@ -1,25 +1,46 @@
 import { computed, Service, signal } from '@angular/core';
-import { DEMO_USERS, User, USER_ROLES } from '@core/constants/user.constants';
+import { DEMO_USERS } from '@core/constants/user.constants';
+import { AuthResponse, LoginPayload } from '@core/auth/types';
+import { USER_ROLES, UserProfile } from '@core/types/user';
+import { delay, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
 
 @Service()
 export class AuthStore {
   private readonly _token = signal<string | null>(null);
-  private readonly _user = signal<Omit<User, 'password'> | null>(null);
+  private readonly _user = signal<UserProfile | null>(null);
 
   readonly token = this._token.asReadonly();
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._token() !== null);
   readonly isAdmin = computed(() => this._user()?.role === USER_ROLES.Admin);
 
-  async login(email: string, password: string): Promise<void> {
-    await new Promise(r => setTimeout(r, 1000));
+  login(payload: LoginPayload): Observable<UserProfile> {
+    return of(payload).pipe(
+      delay(1000),
+      switchMap(({email, password}) => {
+        const found = DEMO_USERS.find(u => u.email === email && u.password === password);
 
-    const found = DEMO_USERS.find(u => u.email === email && u.password === password);
-    if (!found) throw new Error('Invalid credentials');
+        if (!found) {
+          return throwError(() => new Error('Invalid credentials'));
+        }
 
-    const {password: _, ...user} = found;
-    this._user.set(user);
-    this._token.set(this.createFakeJwt(user));
+        const authResponse: AuthResponse = {
+          token: this.createFakeJwt(found),
+          user: {
+            email: found.email,
+            name: found.name,
+            role: found.role
+          }
+        };
+
+        return of(authResponse);
+      }),
+      tap((response) => {
+        this._token.set(response.token);
+        this._user.set(response.user);
+      }),
+      map((response) => response.user)
+    )
   }
 
   logout(): void {

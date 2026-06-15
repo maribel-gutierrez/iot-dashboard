@@ -3,7 +3,9 @@ import { LoginForm } from '@features/auth/login/login-form/login-form';
 import { Router } from '@angular/router';
 import { AuthStore } from '@core/auth/auth.store';
 import { AlertMessage } from '@shared/alert-component/alert-message';
-import { DEMO_USERS, UserRoles, USER_ROLES } from '@core/constants/user.constants';
+import { DEMO_USERS } from '@core/constants/user.constants';
+import { LoginPayload } from '@core/auth/types';
+import { USER_ROLES, UserRoles } from '@core/types/user';
 
 
 @Component({
@@ -16,8 +18,11 @@ import { DEMO_USERS, UserRoles, USER_ROLES } from '@core/constants/user.constant
   styleUrl: './login.css',
 })
 export class Login {
+  router = inject(Router);
+
   authStoreService = inject(AuthStore);
-  router = inject(Router)
+
+  protected readonly USER_ROLES = USER_ROLES;
 
   protected isError = signal<boolean>(false);
   protected readonly errorMessage = 'Invalid credentials';
@@ -29,17 +34,20 @@ export class Login {
     void this.onLogin({email: credentials!.email, password: credentials!.password});
   }
 
-  async onLogin({email, password}: { email: string; password: string }): Promise<void> {
-    try {
-      await this.authStoreService.login(email, password);
-      void this.router.navigate(['/dashboard']);
-    } catch (e) {
-      console.error(e)
-      this.message.set(this.errorMessage);
-      this.isError.set(true);
-      setTimeout(() => this.isError.set(false), 3000);
-    }
+  async onLogin(payload: LoginPayload): Promise<void> {
+    this.authStoreService.login(payload).subscribe({
+      next: () => this.router.navigate(['/dashboard']),
+      error: e => {
+        console.error(e);
+        this.handleErrorMessage();
+      }
+    })
   }
 
-  protected readonly RolesEnum = USER_ROLES;
+  handleErrorMessage() {
+    this.message.set(this.errorMessage);
+    this.isError.set(true);
+    setTimeout(() => this.isError.set(false), 3000);
+  }
+
 }
