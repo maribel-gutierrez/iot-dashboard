@@ -1,26 +1,15 @@
 import { computed, Service, signal } from '@angular/core';
-
-interface DemoUser {
-  email: string;
-  name: string;
-  password: string;
-  role: 'admin' | 'viewer';
-}
-
-const DEMO_USERS: DemoUser[] = [
-  {email: 'admin@demo.io', password: 'demo1234', role: 'admin', name: 'Demo Admin'},
-  {email: 'viewer@demo.io', password: 'demo1234', role: 'viewer', name: 'Demo Viewer'},
-];
+import { DEMO_USERS, User, USER_ROLES } from '@core/constants/user.constants';
 
 @Service()
 export class AuthStore {
   private readonly _token = signal<string | null>(null);
-  private readonly _user = signal<Omit<DemoUser, 'password'> | null>(null);
+  private readonly _user = signal<Omit<User, 'password'> | null>(null);
 
   readonly token = this._token.asReadonly();
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._token() !== null);
-  readonly isAdmin = computed(() => this._user()?.role === 'admin');
+  readonly isAdmin = computed(() => this._user()?.role === USER_ROLES.Admin);
 
   async login(email: string, password: string): Promise<void> {
     await new Promise(r => setTimeout(r, 1000));

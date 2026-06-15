@@ -1,13 +1,15 @@
 import { Component, inject, signal } from '@angular/core';
-import { email, form, FormField, required } from '@angular/forms/signals';
-import { AuthStore } from '@core/auth/auth.store';
+import { LoginForm } from '@features/auth/login/login-form/login-form';
 import { Router } from '@angular/router';
+import { AuthStore } from '@core/auth/auth.store';
 import { AlertMessage } from '@shared/alert-component/alert-message';
+import { DEMO_USERS, UserRoles, USER_ROLES } from '@core/constants/user.constants';
+
 
 @Component({
   selector: 'login',
   imports: [
-    FormField,
+    LoginForm,
     AlertMessage
   ],
   templateUrl: './login.html',
@@ -15,27 +17,21 @@ import { AlertMessage } from '@shared/alert-component/alert-message';
 })
 export class Login {
   authStoreService = inject(AuthStore);
-  router = inject(Router);
+  router = inject(Router)
 
   protected isError = signal<boolean>(false);
   protected readonly errorMessage = 'Invalid credentials';
   protected message = signal<string>('');
 
-  private readonly loginModel = signal({email: '', password: ''});
-
-  loginForm = form(this.loginModel, schema => {
-    required(schema.email);
-    required(schema.password);
-
-    email(schema.email);
-  });
-
-  async onSubmit(event: Event): Promise<void> {
+  loginAs(event: Event, role: UserRoles) {
     event.preventDefault();
+    const credentials = DEMO_USERS.find(user => user.role === role);
+    void this.onLogin({email: credentials!.email, password: credentials!.password});
+  }
 
+  async onLogin({email, password}: { email: string; password: string }): Promise<void> {
     try {
-      await this.authStoreService.login(this.loginForm.email().value(), this.loginForm.password().value());
-
+      await this.authStoreService.login(email, password);
       void this.router.navigate(['/dashboard']);
     } catch (e) {
       console.error(e)
@@ -44,4 +40,6 @@ export class Login {
       setTimeout(() => this.isError.set(false), 3000);
     }
   }
+
+  protected readonly RolesEnum = USER_ROLES;
 }

@@ -2,38 +2,51 @@
   <alert-message [message]="message()"/>
 }
 
-<form (submit)="onSubmit($event)" autocomplete="off" class="justify-center mx-auto mt-20 max-w-lg">
-  <div class="space-y-12">
-    <div class="border-b border-white/10 pb-12">
-      <h1 class="text-base/7 font-semibold text-white">Login</h1>
-      <div class="mt-10 flex flex-col gap-6">
-        <div>
-          <label for="email" class="block text-sm/6 font-medium text-white">Email</label>
-          <div class="mt-2">
-            <div
-              class="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input id="email" type="email" placeholder="example@gmail.com"
-                     class="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-                     [formField]="loginForm.email"/>
-            </div>
-          </div>
-        </div>
-        <div>
-          <label for="password" class="block text-sm/6 font-medium text-white">Password</label>
-          <div class="mt-2">
-            <div
-              class="flex items-center rounded-md bg-white/5 pl-3 outline-1 -outline-offset-1 outline-white/10 focus-within:outline-2 focus-within:-outline-offset-2 focus-within:outline-indigo-500">
-              <input id="password" type="password" placeholder="janesmith"
-                     class="block min-w-0 grow bg-transparent py-1.5 pr-3 pl-1 text-base text-white placeholder:text-gray-500 focus:outline-none sm:text-sm/6"
-                     [formField]="loginForm.password"/>
-            </div>
-          </div>
-        </div>
+<div class="flex flex-row items-center justify-center gap-10">
+  <div>
+    <h2 class="text-white">Explore Now</h2>
+    <p>No account needed — try a demo role</p>
+    <div class="grid grid-cols-2 gap-3 text-white">
+      <div class="bg-neutral-primary-soft block max-w-sm p-6 border border-default rounded-base shadow-xs">
+        <h3 class="mb-3 text-2xl font-semibold tracking-tight text-heading leading-8">Full control</h3>
+        <ul>
+          <li>View all devices</li>
+          <li>Send commands</li>
+          <li>Set Alerts</li>
+          <li>Full analytics</li>
+        </ul>
+        <a href="#"
+           (click)="loginAs($event,RolesEnum.Admin)"
+           class="inline-flex items-center text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
+          Try Admin
+          <svg class="w-4 h-4 ms-1.5 rtl:rotate-180 -me-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+               width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 12H5m14 0-4 4m4-4-4-4"/>
+          </svg>
+        </a>
+      </div>
+      <div>
+        <h3>Read Only</h3>
+        <ul>
+          <li>Monitor devices</li>
+          <li>View telemetry</li>
+          <li>View analytics</li>
+          <li>No controls</li>
+        </ul>
+        <a href="#"
+           (click)="loginAs($event,RolesEnum.Viewer)"
+           class="inline-flex items-center text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none">
+          Try Viewer
+          <svg class="w-4 h-4 ms-1.5 rtl:rotate-180 -me-0.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+               width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 12H5m14 0-4 4m4-4-4-4"/>
+          </svg>
+        </a>
       </div>
     </div>
-    <div class="flex justify-end">
-      <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Submit
-      </button>
-    </div>
   </div>
-</form>
+  <login-form (login)="onLogin($event)"/>
+</div>
+
