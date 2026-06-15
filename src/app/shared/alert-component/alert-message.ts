@@ -1,4 +1,4 @@
-import { Component, computed, Input } from '@angular/core';
+import { Component, input } from '@angular/core';
 
 @Component({
   selector: 'alert-message',
@@ -7,5 +7,5 @@ import { Component, computed, Input } from '@angular/core';
   styleUrl: './alert-message.css',
 })
 export class AlertMessage {
-  @Input({required: true}) message!: string;
+  message = input<string>('');
 }

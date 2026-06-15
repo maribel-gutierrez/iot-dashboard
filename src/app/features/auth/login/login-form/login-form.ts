@@ -1,5 +1,6 @@
-import { Component, EventEmitter, Output, signal } from '@angular/core';
+import { Component, EventEmitter, output, Output, signal } from '@angular/core';
 import { email, form, FormField, required } from '@angular/forms/signals';
+import { LoginPayload } from '@core/auth/types';
 
 @Component({
   selector: 'login-form',
@@ -8,7 +9,7 @@ import { email, form, FormField, required } from '@angular/forms/signals';
   styleUrl: './login-form.css',
 })
 export class LoginForm {
-  @Output() login = new EventEmitter<{ email: string; password: string }>();
+  login = output<LoginPayload>();
 
   private readonly loginModel = signal({email: '', password: ''});
 

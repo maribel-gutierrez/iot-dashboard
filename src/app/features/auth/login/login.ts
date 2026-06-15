@@ -39,12 +39,12 @@ export class Login {
       next: () => this.router.navigate(['/dashboard']),
       error: e => {
         console.error(e);
-        this.handleErrorMessage();
+        this.showErrorMessage();
       }
     })
   }
 
-  handleErrorMessage() {
+  showErrorMessage() {
     this.message.set(this.errorMessage);
     this.isError.set(true);
     setTimeout(() => this.isError.set(false), 3000);
