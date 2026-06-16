@@ -7,9 +7,7 @@ import { RouterOutlet } from '@angular/router';
   templateUrl: './app.html',
   styleUrl: './app.css',
   host: {
-    'class': 'block m-5'
-  }
+    class: 'block m-2',
+  },
 })
-export class App {
-  protected readonly title = signal('iot');
-}
+export class App {}
