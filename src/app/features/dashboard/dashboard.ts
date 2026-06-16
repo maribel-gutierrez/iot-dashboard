@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { AuthStore } from '@core/auth/auth.store';
 import { Router } from '@angular/router';
 
@@ -8,9 +8,13 @@ import { Router } from '@angular/router';
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })
-export class Dashboard {
+export class Dashboard implements OnInit {
   private readonly authStoreService = inject(AuthStore);
   private router = inject(Router);
+
+  ngOnInit() {
+    console.log(this.authStoreService.user());
+  }
 
   logout(event: Event) {
     event.preventDefault();

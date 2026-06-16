@@ -1,12 +1,16 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { LoginForm } from '@features/auth/login/login-form/login-form';
+import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { AuthStore } from '@core/auth/auth.store';
-import { AlertMessage } from '@shared/alert-component/alert-message';
-import { DEMO_USERS } from '@core/constants/user.constants';
+import { finalize, take } from 'rxjs';
+
 import { LoginPayload } from '@core/auth/types';
+import { LoggingService } from '@core/logging.service';
 import { USER_ROLES, UserRoles } from '@core/types/user';
-import { LOGIN_SOURCE, LoginSource } from '@features/auth/login/types';
+
+import { AlertMessage } from '@shared/alert-component/alert-message';
+
+import { LoginForm } from '@features/auth/login/login-form/login-form';
+import { LOGIN_SOURCE, LoginSource } from '@features/auth/login/login-types';
+import { LoginApi } from '@features/auth/login/login-api';
 
 @Component({
   selector: 'login',
@@ -14,18 +18,21 @@ import { LOGIN_SOURCE, LoginSource } from '@features/auth/login/types';
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
+export class Login implements OnDestroy {
   router = inject(Router);
 
-  authStoreService = inject(AuthStore);
+  loginService = inject(LoginApi);
+
+  logger = inject(LoggingService);
 
   protected readonly USER_ROLES = USER_ROLES;
 
   protected isError = signal<boolean>(false);
   protected readonly errorMessage = 'Invalid credentials';
   protected message = signal<string>('');
+  private _alertMessageTimeout: number | null = null;
 
-  protected loginSource = signal<LoginSource>(null);
+  protected loginSource = signal<LoginSource | null>(null);
   protected readonly isLoading = computed(() => this.loginSource() !== null);
   protected readonly isAdminLoading = computed(() => this.loginSource() === LOGIN_SOURCE.Admin);
   protected readonly isViewerLoading = computed(() => this.loginSource() === LOGIN_SOURCE.Viewer);
@@ -47,29 +54,54 @@ export class Login {
 
   loginAs(event: Event, role: UserRoles): void {
     event.preventDefault();
-    this.loginSource.set(role === USER_ROLES.Admin ? 'admin' : 'viewer');
-    const credentials = DEMO_USERS.find((user) => user.role === role);
-    this.onLogin({ email: credentials!.email, password: credentials!.password });
+    this.loginSource.set(role === USER_ROLES.Admin ? USER_ROLES.Admin : USER_ROLES.Viewer);
+    const credentials = this.loginService.getDemoCredentials(role);
+
+    if (!credentials) {
+      this.showErrorMessage('Demo credentials not found');
+      return;
+    }
+
+    this.onLogin(credentials);
   }
 
   onLogin(payload: LoginPayload): void {
     if (!this.loginSource()) {
-      this.loginSource.set('form');
+      this.loginSource.set('Form');
     }
 
-    this.authStoreService.login(payload).subscribe({
-      next: () => this.router.navigate(['/dashboard']),
-      error: (e) => {
-        console.error(e);
-        this.loginSource.set(null);
-        this.showErrorMessage();
-      },
-    });
+    this.loginService
+      .login(payload)
+      .pipe(
+        take(1),
+        finalize(() => this.loginSource.set(null)),
+      )
+      .subscribe({
+        next: () => this.router.navigate(['/dashboard']),
+        error: (e) => {
+          this.logger.error(e);
+          this.showErrorMessage();
+        },
+      });
   }
 
-  showErrorMessage() {
-    this.message.set(this.errorMessage);
+  showErrorMessage(message: string = this.errorMessage) {
+    this.loginSource.set(null);
+    this.message.set(message);
     this.isError.set(true);
-    setTimeout(() => this.isError.set(false), 3000);
+    if (this._alertMessageTimeout) {
+      clearTimeout(this._alertMessageTimeout);
+    }
+    this._alertMessageTimeout = window.setTimeout(() => {
+      this.isError.set(false);
+      this._alertMessageTimeout = null;
+    }, 3000);
+  }
+
+  ngOnDestroy(): void {
+    if (this._alertMessageTimeout) {
+      clearTimeout(this._alertMessageTimeout);
+      this._alertMessageTimeout = null;
+    }
   }
 }

@@ -12,13 +12,12 @@ export class AuthStore {
   readonly token = this._token.asReadonly();
   readonly user = this._user.asReadonly();
   readonly isAuthenticated = computed(() => this._token() !== null);
-  readonly isAdmin = computed(() => this._user()?.role === USER_ROLES.Admin);
 
   login(payload: LoginPayload): Observable<UserProfile> {
     return of(payload).pipe(
       delay(1000),
-      switchMap(({email, password}) => {
-        const found = DEMO_USERS.find(u => u.email === email && u.password === password);
+      switchMap(({ email, password }) => {
+        const found = DEMO_USERS.find((u) => u.email === email && u.password === password);
 
         if (!found) {
           return throwError(() => new Error('Invalid credentials'));
@@ -29,8 +28,8 @@ export class AuthStore {
           user: {
             email: found.email,
             name: found.name,
-            role: found.role
-          }
+            role: found.role,
+          },
         };
 
         return of(authResponse);
@@ -39,8 +38,8 @@ export class AuthStore {
         this._token.set(response.token);
         this._user.set(response.user);
       }),
-      map((response) => response.user)
-    )
+      map((response) => response.user),
+    );
   }
 
   logout(): void {
@@ -50,7 +49,7 @@ export class AuthStore {
 
   private createFakeJwt(user: { email: string; role: string }): string {
     const enc = (o: object) => btoa(JSON.stringify(o));
-    return `${enc({alg: 'none', typ: 'JWT'})}.${enc({
+    return `${enc({ alg: 'none', typ: 'JWT' })}.${enc({
       sub: user.email,
       role: user.role,
       exp: Math.floor(Date.now() / 1000) + 3600, // 1h expiry — handle it!
