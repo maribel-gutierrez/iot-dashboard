@@ -1,114 +1,15 @@
 @if (isError()) {
-  <alert-message [message]="message()" />
+  <alert-message [message]="message()"/>
 }
 
-<div class="m-4 flex flex-row justify-center gap-5">
-  <div
-    class="w-lg justify-center bg-linear-to-b from-slate-50 to-slate-100 px-6 py-12 sm:px-8 lg:px-12"
-  >
-    <div class="w-full">
-      <div class="mb-8">
-        <h2 class="text-2xl font-bold text-slate-900">Explore Now</h2>
-        <p class="mt-1 text-sm text-slate-600">No account needed — try a demo role instantly</p>
-      </div>
-      <!-- Demo Cards Grid -->
-      <div class="flex flex-row justify-between gap-2">
-        <div
-          class="group relative overflow-hidden rounded-xl border-2 border-blue-200 bg-linear-to-br from-blue-50 to-blue-50/50 p-5 transition-all duration-300 hover:border-blue-300 hover:shadow-lg"
-        >
-          <div
-            class="absolute top-2 right-2 inline-flex items-center rounded-full bg-blue-600 px-3 py-1 text-[0.625rem] font-bold tracking-wider text-white"
-          >
-            ADMIN
-          </div>
+<div class="min-h-[60vh] flex items-center justify-center p-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start max-w-4xl w-full">
+    <div class="order-2 md:order-1 flex items-center justify-center">
+      <role-card-grid [loading]="isDemoLoading()" (loginAsDemo)="loginAs($event)"/>
+    </div>
 
-          <h3 class="mt-2 text-lg font-bold text-slate-900">Full Control</h3>
-
-          <!--     CAPABILITIES     -->
-          <ul class="mt-4 space-y-2.5">
-            @for (capability of adminCapabilities; track capability) {
-              <li class="flex items-center gap-2.5 text-sm text-slate-700">
-                <svg
-                  class="h-4 w-4 shrink-0 text-emerald-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                {{ capability }}
-              </li>
-            }
-          </ul>
-          <!-- Button -->
-          <button
-            type="button"
-            (click)="loginAs($event, USER_ROLES.Admin)"
-            [disabled]="isLoading()"
-            class="mt-5 w-full rounded-lg bg-blue-600 px-4 py-2.5 font-semibold text-white transition-colors hover:bg-blue-700 focus:ring-2 focus:ring-blue-500/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {{ isAdminLoading() ? 'Loading...' : 'Try Admin' }}
-          </button>
-
-          <!--     CREDENTIALS     -->
-          <div class="mt-4 border-t border-blue-200 pt-4 text-center">
-            <code class="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600">
-              admin&#64;demo.io
-            </code>
-          </div>
-        </div>
-        <div
-          class="group relative overflow-hidden rounded-xl border-2 border-slate-300 bg-linear-to-br from-slate-100 to-slate-50 p-5 transition-all duration-300 hover:border-slate-400 hover:shadow-lg"
-        >
-          <div
-            class="absolute top-2 right-2 inline-flex items-center rounded-full bg-slate-600 px-3 py-1 text-xs font-bold tracking-wider text-white"
-          >
-            VIEWER
-          </div>
-          <h3 class="mt-2 text-lg font-bold text-slate-900">Read-Only</h3>
-
-          <!-- Capabilities -->
-          <ul class="mt-4 space-y-2.5">
-            @for (capability of viewerCapabilities; track capability) {
-              <li class="flex items-center gap-2.5 text-sm text-slate-700">
-                <svg
-                  class="h-4 w-4 shrink-0 text-emerald-600"
-                  fill="currentColor"
-                  viewBox="0 0 20 20"
-                >
-                  <path
-                    fill-rule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clip-rule="evenodd"
-                  />
-                </svg>
-                {{ capability }}
-              </li>
-            }
-          </ul>
-
-          <!-- Button -->
-          <button
-            type="button"
-            (click)="loginAs($event, USER_ROLES.Viewer)"
-            [disabled]="isLoading()"
-            class="mt-5 w-full rounded-lg bg-slate-600 px-4 py-2.5 font-semibold text-white transition-colors hover:bg-slate-700 focus:ring-2 focus:ring-slate-500/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {{ isViewerLoading() ? 'Loading...' : 'Try Viewer' }}
-          </button>
-
-          <!-- Credentials -->
-          <div class="mt-4 border-t border-slate-300 pt-4 text-center">
-            <code class="rounded border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600">
-              viewer&#64;demo.io
-            </code>
-          </div>
-        </div>
-      </div>
+    <div class="order-1 md:order-2 flex items-center justify-center">
+      <login-form [loading]="isFormLoading()" (login)="login($event)"/>
     </div>
   </div>
-  <login-form [loading]="isFormLoading()" (login)="onLogin($event)" />
 </div>

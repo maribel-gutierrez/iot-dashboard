@@ -1,12 +1,13 @@
 import { Component, input, output, signal } from '@angular/core';
 import { email, form, FormField, required } from '@angular/forms/signals';
+
 import { LoginPayload } from '@core/auth/types';
 
 @Component({
   selector: 'login-form',
   imports: [FormField],
   templateUrl: './login-form.html',
-  styleUrl: './login-form.css',
+  styleUrls: ['./login-form.css'],
 })
 export class LoginForm {
   loading = input.required<boolean>();

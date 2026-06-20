@@ -1,0 +1,97 @@
+<div class="w-full px-4 py-6 sm:px-6 lg:px-8">
+  <div class="w-full">
+    <div class="mb-6">
+      <h2 class="text-xl font-extrabold text-white">Explore Now</h2>
+      <p class="mt-1 text-sm text-slate-300">No account needed — try a demo role instantly</p>
+    </div>
+
+    <!-- Demo Cards Grid -->
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <!-- Admin Card -->
+      <role-card
+        roleTag="ADMIN"
+        heading="Full Control"
+        description="Manage devices, users and settings"
+        credential="admin@demo.io"
+      >
+        <ul capabilities class="mt-4 space-y-2">
+          @for (capability of adminCapabilities; track capability) {
+            <li class="flex items-center gap-3 text-sm text-slate-200">
+              <svg
+                class="h-4 w-4 shrink-0 text-emerald-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              {{ capability }}
+            </li>
+          }
+        </ul>
+
+        <button
+          card-action
+          type="button"
+          (click)="loginAs($event, USER_ROLES.Admin)"
+          [disabled]="loading()"
+          class="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-linear-to-r from-indigo-500 to-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.01] focus:ring-2 focus:ring-indigo-400/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ isAdminLoading() ? 'Loading...' : 'Try Admin' }}
+        </button>
+
+        <div class="mt-4 border-t border-white/6 pt-4 text-center">
+          <code class="rounded bg-white/5 px-3 py-1 text-xs text-slate-200">admin&#64;demo.io</code>
+        </div>
+      </role-card>
+
+      <!-- Viewer Card -->
+      <role-card
+        roleTag="VIEWER"
+        heading="Read-Only"
+        description="View device status and telemetry"
+        credential="viewer@demo.io"
+      >
+        <ul capabilities class="mt-4 space-y-2">
+          @for (capability of viewerCapabilities; track capability) {
+            <li class="flex items-center gap-3 text-sm text-slate-200">
+              <svg
+                class="h-4 w-4 shrink-0 text-emerald-400"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                aria-hidden="true"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+              {{ capability }}
+            </li>
+          }
+        </ul>
+
+        <button
+          card-action
+          type="button"
+          (click)="loginAs($event, USER_ROLES.Viewer)"
+          [disabled]="loading()"
+          class="mt-5 inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-slate-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-[1.01] focus:ring-2 focus:ring-slate-400/50 focus:outline-none disabled:cursor-not-allowed disabled:opacity-60"
+        >
+          {{ isViewerLoading() ? 'Loading...' : 'Try Viewer' }}
+        </button>
+
+        <div class="mt-4 border-t border-white/6 pt-4 text-center">
+          <code class="rounded bg-white/5 px-3 py-1 text-xs text-slate-200"
+          >viewer&#64;demo.io</code
+          >
+        </div>
+      </role-card>
+    </div>
+  </div>
+</div>

@@ -4,19 +4,20 @@ import { finalize, take } from 'rxjs';
 
 import { LoginPayload } from '@core/auth/types';
 import { LoggingService } from '@core/logging.service';
-import { USER_ROLES, UserRoles } from '@core/types/user';
+import { UserRoles } from '@core/types/user';
+
+import { LoginForm } from '@features/auth/login/components/login-form/login-form';
+import { RoleCardGrid } from '@features/auth/login/components/role-card-grid/role-card-grid';
+import { LoginApi } from '@features/auth/login/login-api';
+import { LOGIN_SOURCE, LoginSource } from '@features/auth/login/login-types';
 
 import { AlertMessage } from '@shared/alert-component/alert-message';
 
-import { LoginForm } from '@features/auth/login/login-form/login-form';
-import { LOGIN_SOURCE, LoginSource } from '@features/auth/login/login-types';
-import { LoginApi } from '@features/auth/login/login-api';
-
 @Component({
   selector: 'login',
-  imports: [LoginForm, AlertMessage],
+  imports: [LoginForm, AlertMessage, RoleCardGrid],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrls: ['./login.css'],
 })
 export class Login implements OnDestroy {
   router = inject(Router);
@@ -25,36 +26,18 @@ export class Login implements OnDestroy {
 
   logger = inject(LoggingService);
 
-  protected readonly USER_ROLES = USER_ROLES;
-
   protected isError = signal<boolean>(false);
   protected readonly errorMessage = 'Invalid credentials';
   protected message = signal<string>('');
   private _alertMessageTimeout: number | null = null;
 
   protected loginSource = signal<LoginSource | null>(null);
-  protected readonly isLoading = computed(() => this.loginSource() !== null);
-  protected readonly isAdminLoading = computed(() => this.loginSource() === LOGIN_SOURCE.Admin);
-  protected readonly isViewerLoading = computed(() => this.loginSource() === LOGIN_SOURCE.Viewer);
+  protected readonly isDemoLoading = computed(
+    () => this.loginSource() === LOGIN_SOURCE.Admin || this.loginSource() === LOGIN_SOURCE.Viewer,
+  );
   protected readonly isFormLoading = computed(() => this.loginSource() === LOGIN_SOURCE.Form);
 
-  protected readonly adminCapabilities = [
-    'View all devices',
-    'Send commands',
-    'Set alert rules',
-    'Full analytics',
-  ];
-
-  protected readonly viewerCapabilities = [
-    'Monitor devices',
-    'View live telemetry',
-    'View analytics',
-    'No controls',
-  ];
-
-  loginAs(event: Event, role: UserRoles): void {
-    event.preventDefault();
-    this.loginSource.set(role === USER_ROLES.Admin ? USER_ROLES.Admin : USER_ROLES.Viewer);
+  loginAs(role: UserRoles): void {
     const credentials = this.loginService.getDemoCredentials(role);
 
     if (!credentials) {
@@ -62,11 +45,11 @@ export class Login implements OnDestroy {
       return;
     }
 
-    this.onLogin(credentials);
+    this.login(credentials);
   }
 
-  onLogin(payload: LoginPayload): void {
-    if (!this.loginSource()) {
+  login(payload: LoginPayload): void {
+    if (this.loginSource() === null) {
       this.loginSource.set('Form');
     }
 

@@ -1,10 +1,10 @@
-import { Service, inject } from '@angular/core';
-import { DEMO_USERS } from '@core/constants/user.constants';
+import { inject, Service } from '@angular/core';
+import { Observable } from 'rxjs';
+
 import { AuthStore } from '@core/auth/auth.store';
 import { LoginPayload } from '@core/auth/types';
-import { UserRoles } from '@core/types/user';
-import { Observable } from 'rxjs';
-import { UserProfile } from '@core/types/user';
+import { DEMO_USERS } from '@core/constants/user.constants';
+import { UserProfile, UserRoles } from '@core/types/user';
 
 @Service()
 export class LoginApi {

@@ -1,8 +1,9 @@
 import { computed, Service, signal } from '@angular/core';
-import { DEMO_USERS } from '@core/constants/user.constants';
-import { AuthResponse, LoginPayload } from '@core/auth/types';
-import { USER_ROLES, UserProfile } from '@core/types/user';
 import { delay, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+
+import { AuthResponse, LoginPayload } from '@core/auth/types';
+import { DEMO_USERS } from '@core/constants/user.constants';
+import { UserProfile } from '@core/types/user';
 
 @Service()
 export class AuthStore {
@@ -15,7 +16,7 @@ export class AuthStore {
 
   login(payload: LoginPayload): Observable<UserProfile> {
     return of(payload).pipe(
-      delay(1000),
+      delay(5000),
       switchMap(({ email, password }) => {
         const found = DEMO_USERS.find((u) => u.email === email && u.password === password);
 

@@ -1,0 +1,24 @@
+<div
+  class="group relative overflow-hidden rounded-2xl border border-white/6 bg-linear-to-br p-5 shadow-md transition-transform hover:-translate-y-1 hover:shadow-xl">
+  <div class="flex items-start justify-between">
+    <div>
+      <div class="inline-flex items-center gap-2">
+        <div class="rounded-full bg-slate-600 px-3 py-1 text-xs font-bold tracking-wide text-white">{{ roleTag() }}
+        </div>
+        <h3 class="text-lg font-semibold text-white">{{ heading() }}</h3>
+      </div>
+      <p class="mt-1 text-xs text-slate-300">{{ description() }}</p>
+    </div>
+  </div>
+
+  <!-- Capabilities (projected) -->
+  <ng-content select="[capabilities]"></ng-content>
+
+  <!-- Action (projected) -->
+  <ng-content select="[card-action]"></ng-content>
+
+  <!-- Credentials -->
+  <div class="mt-4 border-t border-white/6 pt-4 text-center">
+    <code class="rounded bg-white/5 px-3 py-1 text-xs text-slate-200">{{ credential() }}</code>
+  </div>
+</div>
